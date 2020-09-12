@@ -398,6 +398,49 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Customer')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Customer",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Customer",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"CustomerSales": {},
+									"CustomerStream": {},
+									"CustomerSalesStream": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/Customer')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/copysales')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1069,56 +1112,13 @@
 							"name": "SalesStream"
 						}
 					],
-					"script": "source(output(\n\t\tCustomerID as string,\n\t\tLastName as string,\n\t\tFirstName as string,\n\t\tPhoneNumber as string,\n\t\tCreatedDate as string,\n\t\tUpdatedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> CustomerSales\nsource(output(\n\t\tCustomerID as string,\n\t\tLastName as string,\n\t\tFirstName as string,\n\t\tPhoneNumber as string,\n\t\tCreatedDate as string,\n\t\tUpdatedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> CustomerStream\nCustomerSales, CustomerStream join(CustomerSales@CustomerID == CustomerStream@CustomerID,\n\tjoinType:'outer',\n\tbroadcast: 'auto')~> SalesStream\nSalesStream sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> CustomerSalesStream"
+					"script": "source(output(\n\t\tCustomerID as string,\n\t\tLastName as string,\n\t\tFirstName as string,\n\t\tPhoneNumber as string,\n\t\tCreatedDate as string,\n\t\tUpdatedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> CustomerSales\nsource(output(\n\t\tCustomerID as string,\n\t\tLastName as string,\n\t\tFirstName as string,\n\t\tPhoneNumber as string,\n\t\tCreatedDate as string,\n\t\tUpdatedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> CustomerStream\nCustomerSales, CustomerStream join(CustomerSales@CustomerID == CustomerStream@CustomerID,\n\tjoinType:'outer',\n\tbroadcast: 'auto')~> SalesStream\nSalesStream sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tmapColumn(\n\t\tCustomerID = CustomerSales@CustomerID,\n\t\tLastName = CustomerSales@LastName,\n\t\tFirstName = CustomerSales@FirstName,\n\t\tPhoneNumber = CustomerSales@PhoneNumber,\n\t\tCreatedDate = CustomerSales@CreatedDate,\n\t\tUpdatedDate = CustomerSales@UpdatedDate,\n\t\tCustomerID = CustomerStream@CustomerID,\n\t\tLastName = CustomerStream@LastName,\n\t\tFirstName = CustomerStream@FirstName,\n\t\tPhoneNumber = CustomerStream@PhoneNumber,\n\t\tCreatedDate = CustomerStream@CreatedDate,\n\t\tUpdatedDate = CustomerStream@UpdatedDate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> CustomerSalesStream"
 				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/CustomerSales')]",
 				"[concat(variables('factoryId'), '/datasets/CustStream')]",
 				"[concat(variables('factoryId'), '/datasets/CustomerSalesStream')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Customer')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Customer",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "Customer",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"CustomerSales": {},
-									"CustomerStream": {},
-									"CustomerSalesStream": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							}
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Customer')]"
 			]
 		}
 	]
