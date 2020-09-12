@@ -1,0 +1,39 @@
+{
+	"name": "Customer",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "CustomerSales",
+						"type": "DatasetReference"
+					},
+					"name": "CustomerSales"
+				},
+				{
+					"dataset": {
+						"referenceName": "CustStream",
+						"type": "DatasetReference"
+					},
+					"name": "CustomerStream"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CustomerSalesStream",
+						"type": "DatasetReference"
+					},
+					"name": "CustomerSalesStream"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SalesStream"
+				}
+			],
+			"script": "source(output(\n\t\tCustomerID as string,\n\t\tLastName as string,\n\t\tFirstName as string,\n\t\tPhoneNumber as string,\n\t\tCreatedDate as string,\n\t\tUpdatedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> CustomerSales\nsource(output(\n\t\tCustomerID as string,\n\t\tLastName as string,\n\t\tFirstName as string,\n\t\tPhoneNumber as string,\n\t\tCreatedDate as string,\n\t\tUpdatedDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> CustomerStream\nCustomerSales, CustomerStream join(CustomerSales@CustomerID == CustomerStream@CustomerID,\n\tjoinType:'outer',\n\tbroadcast: 'auto')~> SalesStream\nSalesStream sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> CustomerSalesStream"
+		}
+	}
+}
