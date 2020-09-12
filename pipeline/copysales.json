@@ -1,0 +1,188 @@
+{
+	"name": "copysales",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach_bda",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.cw_items",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy_bda",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [
+								{
+									"name": "Source",
+									"value": "@{item().source.schema}.@{item().source.table}"
+								},
+								{
+									"name": "Destination",
+									"value": "cloudsales//@{item().destination.fileName}"
+								}
+							],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"validateDataConsistency": false
+							},
+							"inputs": [
+								{
+									"referenceName": "SourceDataset_bda",
+									"type": "DatasetReference",
+									"parameters": {
+										"cw_schema": "@item().source.schema",
+										"cw_table": "@item().source.table"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DestinationDataset_bda",
+									"type": "DatasetReference",
+									"parameters": {
+										"cw_fileName": "@item().destination.fileName"
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"cw_items": {
+				"type": "Array",
+				"defaultValue": [
+					{
+						"source": {
+							"schema": "dbo",
+							"table": "Addresses"
+						},
+						"destination": {
+							"fileName": "dbo.Addresses.txt"
+						}
+					},
+					{
+						"source": {
+							"schema": "dbo",
+							"table": "Customers"
+						},
+						"destination": {
+							"fileName": "dbo.Customers.txt"
+						}
+					},
+					{
+						"source": {
+							"schema": "dbo",
+							"table": "OrderDetails"
+						},
+						"destination": {
+							"fileName": "dbo.OrderDetails.txt"
+						}
+					},
+					{
+						"source": {
+							"schema": "dbo",
+							"table": "Orders"
+						},
+						"destination": {
+							"fileName": "dbo.Orders.txt"
+						}
+					},
+					{
+						"source": {
+							"schema": "Hidden",
+							"table": "Addresses"
+						},
+						"destination": {
+							"fileName": "Hidden.Addresses.txt"
+						}
+					},
+					{
+						"source": {
+							"schema": "Hidden",
+							"table": "AddressUpdates"
+						},
+						"destination": {
+							"fileName": "Hidden.AddressUpdates.txt"
+						}
+					},
+					{
+						"source": {
+							"schema": "Hidden",
+							"table": "Customers"
+						},
+						"destination": {
+							"fileName": "Hidden.Customers.txt"
+						}
+					},
+					{
+						"source": {
+							"schema": "Hidden",
+							"table": "CustomerUpdates"
+						},
+						"destination": {
+							"fileName": "Hidden.CustomerUpdates.txt"
+						}
+					},
+					{
+						"source": {
+							"schema": "Hidden",
+							"table": "OrderDetails"
+						},
+						"destination": {
+							"fileName": "Hidden.OrderDetails.txt"
+						}
+					},
+					{
+						"source": {
+							"schema": "Hidden",
+							"table": "Orders"
+						},
+						"destination": {
+							"fileName": "Hidden.Orders.txt"
+						}
+					},
+					{
+						"source": {
+							"schema": "Hidden",
+							"table": "OrderUpdates"
+						},
+						"destination": {
+							"fileName": "Hidden.OrderUpdates.txt"
+						}
+					}
+				]
+			}
+		},
+		"annotations": []
+	}
+}
