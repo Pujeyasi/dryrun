@@ -15,6 +15,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'CosmosDb1'"
 		},
+		"SqlServerVan_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'SqlServerVan'"
+		},
 		"cloudsalesSQLlink_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'cloudsalesSQLlink'"
@@ -58,6 +62,9 @@
 					},
 					"cloudsalesSQLlink_connectionString": {
 						"value": "[parameters('cloudsalesSQLlink_connectionString')]"
+					},
+					"SqlServerVan_connectionString": {
+						"value": "[parameters('SqlServerVan_connectionString')]"
 					},
 					"AzureDataLakeStorage1_properties_typeProperties_url": {
 						"value": "[parameters('AzureDataLakeStorage1_properties_typeProperties_url')]"

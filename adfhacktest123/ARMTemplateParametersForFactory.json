@@ -11,6 +11,9 @@
 		"CosmosDb1_connectionString": {
 			"value": ""
 		},
+		"SqlServerVan_connectionString": {
+			"value": ""
+		},
 		"cloudsalesSQLlink_connectionString": {
 			"value": ""
 		},
